@@ -1,1 +1,65 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <link rel="stylesheet" href="styles.css">\n    <title>Card Game</title>\n    <style>\n        body { font-family: Arial, sans-serif; }\n        .card { width: 100px; height: 150px; border: 1px solid black; display: inline-block; margin: 10px; }\n        .card img { width: 100%; height: auto; }\n        #deck { margin: 20px; }\n    </style>\n</head>\n<body>\n    <h1>Card Game</h1>\n    <div id="deck"></div>\n    <script>\n        const suits = ['hearts', 'diamonds', 'clubs', 'spades'];\n        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];\n        const deck = [];\n\n        // Build the deck of cards\n        suits.forEach(suit => {\n            values.forEach(value => {\n                deck.push({ suit, value });\n            });\n        });\n\n        // Shuffle the deck\n        function shuffle(array) {\n            for (let i = array.length - 1; i > 0; i--) {\n                const j = Math.floor(Math.random() * (i + 1));\n                [array[i], array[j]] = [array[j], array[i]];\n            }\n        }\n\n        // Draw a card\n        function drawCard() {\n            return deck.pop();\n        }\n\n        // Display the deck\n        function displayDeck() {\n            const deckDiv = document.getElementById('deck');\n            deckDiv.innerHTML = '';\n            shufflyDeck = [...deck];\n            shufflyDeck.forEach(card => {\n                const cardDiv = document.createElement('div');\n                cardDiv.className = 'card';\n                cardDiv.innerHTML = \\<p>${card.value} of ${card.suit}</p>\\;\n                deckDiv.appendChild(cardDiv);\n            });\n        }\n\n        // Initialize game\n        shuffle(deck);\n        displayDeck();\n    <\/script>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            background-color: white;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .suit {
+            font-size: 60px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <div class="card"><span class="suit">♥</span></div>
+        <div class="card"><span class="suit">♦</span></div>
+        <div class="card"><span class="suit">♣</span></div>
+        <div class="card"><span class="suit">♠</span></div>
+        <div class="card"><span class="suit">♥</span></div>
+        <div class="card"><span class="suit">♦</span></div>
+        <div class="card"><span class="suit">♣</span></div>
+        <div class="card"><span class="suit">♠</span></div>
+        <div class="card"><span class="suit">♥</span></div>
+    </div>
+    <script>
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                alert('Card clicked!');
+            });
+        });
+    </script>
+</body>
+</html>
