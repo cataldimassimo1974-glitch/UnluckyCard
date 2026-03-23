@@ -2,232 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pick Your Fate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlucky Card Game</title>
     <style>
-        :root {
-            --bg: #0f172a;
-            --accent: #f43f5e;
-            --card-back: #1e293b;
-            --card-front: #ffffff;
-            --text-dark: #0f172a;
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
             color: white;
             margin: 0;
-            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
         }
-
-        h1 {
-            font-size: 1.6rem;
-            margin: 30px 0 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            user-select: none;
-        }
-
-        #p_display {
-            color: #94a3b8;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        /* Griglia ottimizzata per Mobile */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
         .card {
-            aspect-ratio: 2 / 3;
-            background-color: var(--card-back);
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            width: 100px;
+            height: 150px;
+            perspective: 1000px;
+            margin: 10px;
+        }
+        .card-inner {
             position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
         }
-
-        /* Testo "?" sul retro */
-        .card .mark {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent);
-            transition: opacity 0.2s;
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
         }
-
-        /* Testo della regola (nascosto inizialmente) */
-        .card .rule-text {
-            display: none;
-            padding: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-align: center;
-            line-height: 1.2;
-            word-wrap: break-word;
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
         }
-
-        /* Carta Rivelata */
-        .card.revealed {
-            background-color: var(--card-front);
-            border-color: white;
-            transform: scale(1.08);
-            z-index: 10;
-            box-shadow: 0 0 25px rgba(244, 63, 94, 0.5);
+        .card-front {
+            background-color: #007bff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
         }
-
-        .card.revealed .mark { display: none; }
-        .card.revealed .rule-text { display: block; }
-
-        /* Altre carte dopo la scelta */
-        .card.dimmed {
-            opacity: 0.2;
-            filter: grayscale(1);
-            pointer-events: none;
-            transform: scale(0.95);
-        }
-
-        #reset-btn {
-            margin-top: 35px;
-            background: var(--accent);
-            border: none;
-            color: white;
-            padding: 15px 45px;
-            border-radius: 50px;
-            font-weight: 800;
-            display: none;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
-            text-transform: uppercase;
-        }
-
-        /* Pannello Admin Migliorato */
-        #admin {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white; color: #1a1a1a;
-            display: none; padding: 25px; box-sizing: border-box;
-            z-index: 1000; overflow-y: auto;
+        .card-back {
+            background-color: #28a745;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            transform: rotateY(180deg);
         }
     </style>
 </head>
 <body>
-
-    <h1 id="title">DRAW NOW</h1>
-    <p id="p_display">Pick one of the 9 cards.</p>
-
-    <div class="grid" id="board"></div>
-
-    <button id="reset-btn" onclick="init()">RESET BOARD</button>
-
-    <div id="admin">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:15px;">
-            <h2 style="margin:0">Manager</h2>
-            <button onclick="document.getElementById('admin').style.display='none'" style="padding:10px 15px; background:#eee; border:none; border-radius:5px; font-weight:bold;">CLOSE</button>
+    <div class="card" onclick="this.classList.toggle('flipped');">
+        <div class="card-inner">
+            <div class="card-front">Front</div>
+            <div class="card-back">Back</div>
         </div>
-        <div id="list" style="margin-top:20px;"></div>
     </div>
-
     <script>
-        const STORAGE_KEY = 'grid_cards_final_v1';
-        const defaultRules = [
-            "The Luxury Tax: For the next 30 minutes, every single request must be accompanied by an mandatory extra tip.",
-            "The VIP Entrance Fee: Send an immediate payment just to keep chatting for the next 10 minutes.",
-            "Gaslight Special: Pick a payment he made and insist it 'never arrived'. Demand the full balance.",
-            "Today’s Special Offer: For the rest of the day, all payments and tips cost 50% more.",
-            "The Selective Hearing: Do the exact opposite of what the user asks for the next requests.",
-            "The Silent Treatment: For the next 5 minutes, reply only with emojis or don't reply at all.",
-            "The Outfit Tease: Agree to an outfit change, take payment, then change into something more covered.",
-            "Blurry Vision: The next photo/video will be blurry. Pay for 'Premium Focus' to fix it.",
-            "The Clock is Ticking: Cut your response speed or session time by 50%."
-        ];
-
-        let rules = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultRules;
-
-        function init() {
-            const board = document.getElementById('board');
-            const resetBtn = document.getElementById('reset-btn');
-            board.innerHTML = '';
-            resetBtn.style.display = 'none';
-
-            let shuffled = [...rules].sort(() => Math.random() - 0.5);
-
-            for (let i = 0; i < 9; i++) {
-                const card = document.createElement('div');
-                card.className = 'card';
-                
-                const rule = shuffled[i % shuffled.length];
-                
-                card.innerHTML = `
-                    <div class="mark">?</div>
-                    <div class="rule-text">${rule}</div>
-                `;
-                
-                // Gestore evento tocco/click unico
-                card.onclick = function() {
-                    if (this.classList.contains('revealed') || document.querySelector('.card.revealed')) return;
-
-                    this.classList.add('revealed');
-                    
-                    document.querySelectorAll('.card').forEach(c => {
-                        if (c !== this) c.classList.add('dimmed');
-                    });
-                    
-                    setTimeout(() => {
-                        resetBtn.style.display = 'block';
-                    }, 500);
-                };
-
-                board.appendChild(card);
-            }
-        }
-
-        // Segreto: Triplo click sul Titolo
-        document.getElementById('title').onclick = function(e) {
-            if (e.detail === 3) {
-                document.getElementById('admin').style.display = 'block';
-                renderAdmin();
-            }
-        };
-
-        function renderAdmin() {
-            const list = document.getElementById('list');
-            list.innerHTML = rules.map((r, i) => `
-                <div style="padding:15px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.8rem; padding-right:10px;">${r}</span>
-                    <button onclick="deleteRule(${i})" style="color:red; background:none; border:1px solid red; padding:5px 10px; border-radius:5px;">DEL</button>
-                </div>
-            `).join('');
-        }
-
-        window.deleteRule = (i) => {
-            rules.splice(i, 1);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(rules));
-            renderAdmin();
-        };
-
-        //
+        // Card flip logic
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+        });
+    </script>
+</body>
+</html>
