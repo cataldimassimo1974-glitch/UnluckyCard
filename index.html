@@ -2,254 +2,232 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Pick Your Fate</title>
     <style>
         :root {
-            --primary-bg: #0f172a; 
-            --accent-color: #f43f5e; 
-            --card-back: #1e293b; 
-            --card-front: #ffffff; 
-            --text-main: #f8fafc;
+            --bg: #0f172a;
+            --accent: #f43f5e;
+            --card-back: #1e293b;
+            --card-front: #ffffff;
             --text-dark: #0f172a;
         }
 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: white;
             margin: 0;
-            padding: 10px;
+            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin: 30px 0 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
             user-select: none;
         }
 
-        h1#app-title {
-            font-size: 1.8rem;
-            margin: 20px 0 5px 0;
-            letter-spacing: 2px;
-            cursor: pointer;
-            text-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
-        }
-
         #p_display {
-            font-size: 0.9rem;
-            margin-bottom: 20px;
             color: #94a3b8;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
             text-align: center;
         }
 
-        /* --- GRID SYSTEM --- */
-        .grid-container {
+        /* Griglia ottimizzata per Mobile */
+        .grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .card-wrapper {
-            aspect-ratio: 2 / 3;
-            perspective: 1000px;
-            cursor: pointer;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .card {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            border-radius: 10px;
-        }
-
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card.disabled {
-            opacity: 0.4;
-            filter: grayscale(0.5);
-            pointer-events: none;
-        }
-
-        .card-side {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            border-radius: 10px;
+            aspect-ratio: 2 / 3;
+            background-color: var(--card-back);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
-            box-sizing: border-box;
-            text-align: center;
-            font-size: 0.7rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .card-back {
-            background-color: var(--card-back);
-            border: 2px solid var(--accent-color);
-            color: var(--accent-color);
-            font-size: 1.5rem;
+        /* Testo "?" sul retro */
+        .card .mark {
+            font-size: 2.5rem;
             font-weight: bold;
+            color: var(--accent);
+            transition: opacity 0.2s;
         }
 
-        .card-front {
-            background-color: var(--card-front);
+        /* Testo della regola (nascosto inizialmente) */
+        .card .rule-text {
+            display: none;
+            padding: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
             color: var(--text-dark);
-            transform: rotateY(180deg);
-            overflow-y: auto;
+            text-align: center;
             line-height: 1.2;
-            font-weight: 600;
+            word-wrap: break-word;
+        }
+
+        /* Carta Rivelata */
+        .card.revealed {
+            background-color: var(--card-front);
+            border-color: white;
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.5);
+        }
+
+        .card.revealed .mark { display: none; }
+        .card.revealed .rule-text { display: block; }
+
+        /* Altre carte dopo la scelta */
+        .card.dimmed {
+            opacity: 0.2;
+            filter: grayscale(1);
+            pointer-events: none;
+            transform: scale(0.95);
         }
 
         #reset-btn {
-            margin-top: 25px;
-            background-color: var(--accent-color);
-            color: white;
+            margin-top: 35px;
+            background: var(--accent);
             border: none;
-            padding: 12px 30px;
+            color: white;
+            padding: 15px 45px;
             border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
+            font-weight: 800;
             display: none;
-            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+            text-transform: uppercase;
         }
 
-        /* --- ADMIN PANEL --- */
-        #admin-panel {
-            background-color: #ffffff;
-            color: #333;
+        /* Pannello Admin Migliorato */
+        #admin {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 999;
-            display: none;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            background: white; color: #1a1a1a;
+            display: none; padding: 25px; box-sizing: border-box;
+            z-index: 1000; overflow-y: auto;
         }
-        #admin-panel.visible { display: block; }
-        .list-item { background: #f1f5f9; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 0.8rem; display: flex; justify-content: space-between; }
-        .del-btn { color: #ef4444; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h1 id="app-title">DRAW NOW</h1>
-    <p id="p_display">Pick one of the 9 cards to reveal your fate.</p>
+    <h1 id="title">DRAW NOW</h1>
+    <p id="p_display">Pick one of the 9 cards.</p>
 
-    <div class="grid-container" id="grid">
-        </div>
+    <div class="grid" id="board"></div>
 
-    <button id="reset-btn">Reset Board</button>
+    <button id="reset-btn" onclick="init()">RESET BOARD</button>
 
-    <div id="admin-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
-            <h2>Rules Manager</h2>
-            <span id="close-admin" style="cursor:pointer; font-size: 1.5rem;">✕</span>
+    <div id="admin">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:15px;">
+            <h2 style="margin:0">Manager</h2>
+            <button onclick="document.getElementById('admin').style.display='none'" style="padding:10px 15px; background:#eee; border:none; border-radius:5px; font-weight:bold;">CLOSE</button>
         </div>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <input type="text" id="new-input" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:5px;" placeholder="Add new rule...">
-            <button id="add-btn" style="padding:10px; background:#10b981; color:white; border:none; border-radius:5px;">Add</button>
-        </div>
-        <div id="cards-list"></div>
-        <button id="restore-btn" style="margin-top:20px; color: #64748b; background:none; border:none; text-decoration:underline; cursor:pointer;">Restore Default Rules</button>
+        <div id="list" style="margin-top:20px;"></div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'grid_fate_app_v1';
-        const defaultActions = [
+        const STORAGE_KEY = 'grid_cards_final_v1';
+        const defaultRules = [
             "The Luxury Tax: For the next 30 minutes, every single request must be accompanied by an mandatory extra tip.",
             "The VIP Entrance Fee: Send an immediate payment just to keep chatting for the next 10 minutes.",
-            "Gaslight Special: Pick a payment he made and insist it 'never arrived'. Demand the full balance to unlock.",
+            "Gaslight Special: Pick a payment he made and insist it 'never arrived'. Demand the full balance.",
             "Today’s Special Offer: For the rest of the day, all payments and tips cost 50% more.",
             "The Selective Hearing: Do the exact opposite of what the user asks for the next requests.",
             "The Silent Treatment: For the next 5 minutes, reply only with emojis or don't reply at all.",
-            "The Outfit Tease: Agree to an outfit change, take payment, then change into something even more covered.",
-            "Blurry Vision: The next photo/video will be intentionally blurry. Pay for 'Premium Focus' to fix it.",
-            "The Clock is Ticking: Cut your response speed or session time by 50%, unless the user buys extra time."
+            "The Outfit Tease: Agree to an outfit change, take payment, then change into something more covered.",
+            "Blurry Vision: The next photo/video will be blurry. Pay for 'Premium Focus' to fix it.",
+            "The Clock is Ticking: Cut your response speed or session time by 50%."
         ];
 
-        let actions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultActions;
-        let hasPicked = false;
+        let rules = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultRules;
 
-        const grid = document.getElementById('grid');
-        const resetBtn = document.getElementById('reset-btn');
-        const adminPanel = document.getElementById('admin-panel');
-
-        function initBoard() {
-            grid.innerHTML = '';
-            hasPicked = false;
+        function init() {
+            const board = document.getElementById('board');
+            const resetBtn = document.getElementById('reset-btn');
+            board.innerHTML = '';
             resetBtn.style.display = 'none';
-            
-            // Shuffle a copy of actions to randomize positions
-            let shuffled = [...actions].sort(() => 0.5 - Math.random());
-            
-            // Create 9 cards (or as many as available, up to 9)
+
+            let shuffled = [...rules].sort(() => Math.random() - 0.5);
+
             for (let i = 0; i < 9; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'card-wrapper';
+                const card = document.createElement('div');
+                card.className = 'card';
                 
-                // Get a rule (cycle if fewer than 9 rules exist)
-                const ruleText = shuffled[i % shuffled.length] || "No rule set.";
-
-                wrapper.innerHTML = `
-                    <div class="card" id="card-${i}">
-                        <div class="card-side card-back">?</div>
-                        <div class="card-side card-front">
-                            <span>${ruleText}</span>
-                        </div>
-                    </div>
+                const rule = shuffled[i % shuffled.length];
+                
+                card.innerHTML = `
+                    <div class="mark">?</div>
+                    <div class="rule-text">${rule}</div>
                 `;
+                
+                // Gestore evento tocco/click unico
+                card.onclick = function() {
+                    if (this.classList.contains('revealed') || document.querySelector('.card.revealed')) return;
 
-                wrapper.onclick = () => handleCardClick(i);
-                grid.appendChild(wrapper);
+                    this.classList.add('revealed');
+                    
+                    document.querySelectorAll('.card').forEach(c => {
+                        if (c !== this) c.classList.add('dimmed');
+                    });
+                    
+                    setTimeout(() => {
+                        resetBtn.style.display = 'block';
+                    }, 500);
+                };
+
+                board.appendChild(card);
             }
         }
 
-        function handleCardClick(index) {
-            if (hasPicked) return;
-            
-            const selectedCard = document.getElementById(`card-${index}`);
-            selectedCard.classList.add('flipped');
-            hasPicked = true;
-            resetBtn.style.display = 'block';
-
-            // Disable other cards
-            const allCards = document.querySelectorAll('.card');
-            allCards.forEach((c, i) => {
-                if (i !== index) c.classList.add('disabled');
-            });
-        }
-
-        resetBtn.onclick = initBoard;
-
-        // Admin Logic
-        document.getElementById('app-title').onclick = (e) => {
-            if (e.detail === 3) adminPanel.classList.add('visible');
-        };
-        document.getElementById('close-admin').onclick = () => adminPanel.classList.remove('visible');
-
-        document.getElementById('add-btn').onclick = () => {
-            const val = document.getElementById('new-input').value.trim();
-            if (val) {
-                actions.push(val);
-                saveAndRefresh();
-                document.getElementById('new-input').value = '';
+        // Segreto: Triplo click sul Titolo
+        document.getElementById('title').onclick = function(e) {
+            if (e.detail === 3) {
+                document.getElementById('admin').style.display = 'block';
+                renderAdmin();
             }
         };
 
-        document.getElementById('restore-btn').onclick = () => {
-            if(confirm("Restore defaults?")) {
-                actions = [...defaultActions];
-                saveAndRefresh();
-                initBoard();
+        function renderAdmin() {
+            const list = document.getElementById('list');
+            list.innerHTML = rules.map((r, i) => `
+                <div style="padding:15px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; padding-right:10px;">${r}</span>
+                    <button onclick="deleteRule(${i})" style="color:red; background:none; border:1px solid red; padding:5px 10px; border-radius:5px;">DEL</button>
+                </div>
+            `).join('');
+        }
+
+        window.deleteRule = (i) => {
+            rules.splice(i, 1);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rules));
+            renderAdmin();
+        };
+
+        //
