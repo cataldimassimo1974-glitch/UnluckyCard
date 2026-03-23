@@ -3,22 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Game</title>
+    <title>Unlucky Card</title>
     <style>
-      body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f4; }
-      .card { margin: 10px; padding: 20px; text-align: center; width: 150px; height: 200px; border: 1px solid #ccc; border-radius: 10px; background-color: #fff; cursor: pointer; transition: all 0.3s; }
-      .card:hover { background-color: #e2e2e2; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background-color: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="card" onclick="alert('The Luxury Tax: For the next 30 minutes, every single request must be accompanied by an mandatory extra tip.')">Luxury Tax</div>
-    <div class="card" onclick="alert('The VIP Entrance Fee: Send an immediate payment just to keep chatting for the next 10 minutes.')">VIP Entrance</div>
-    <div class="card" onclick="alert('Gaslight Special: Pick a payment he made and insist it "never arrived". Demand the full balance.')">Gaslight Special</div>
-    <div class="card" onclick="alert('Today\'s Special Offer: For the rest of the day, all payments and tips cost 50% more.')">Today's Special</div>
-    <div class="card" onclick="alert('The Selective Hearing: Do the exact opposite of what the user asks for the next requests.')">Selective Hearing</div>
-    <div class="card" onclick="alert('The Silent Treatment: For the next 5 minutes, reply only with emojis or don\'t reply at all.')">Silent Treatment</div>
-    <div class="card" onclick="alert('The Outfit Tease: Agree to an outfit change, take payment, then change into something more covered.')">Outfit Tease</div>
-    <div class="card" onclick="alert('Blurry Vision: The next photo/video will be blurry. Pay for \'Premium Focus\' to fix it.')">Blurry Vision</div>
-    <div class="card" onclick="alert('The Clock is Ticking: Cut your response speed or session time by 50%.')">Clock is Ticking</div>
+    <div class="grid">
+        <div class="card" onclick="showAlert(0)">2♥</div>
+        <div class="card" onclick="showAlert(1)">8♦</div>
+        <div class="card" onclick="showAlert(2)">9♣</div>
+        <div class="card" onclick="showAlert(3)">5♠</div>
+        <div class="card" onclick="showAlert(4)">7♥</div>
+        <div class="card" onclick="showAlert(5)">6♦</div>
+        <div class="card" onclick="showAlert(6)">4♣</div>
+        <div class="card" onclick="showAlert(7)">J♠</div>
+        <div class="card" onclick="showAlert(8)">3♥</div>
+    </div>
+    <script>
+        function showAlert(index) {
+            const instructions = [
+                "The Luxury Tax: For the next 30 minutes, every single request must be accompanied by an mandatory extra tip.",
+                "The VIP Entrance Fee: Send an immediate payment just to keep chatting for the next 10 minutes.",
+                "Gaslight Special: Pick a payment he made and insist it 'never arrived'. Demand the full balance.",
+                "Today's Special Offer: For the rest of the day, all payments and tips cost 50% more.",
+                "The Selective Hearing: Do the exact opposite of what the user asks for the next requests.",
+                "The Silent Treatment: For the next 5 minutes, reply only with emojis or don't reply at all.",
+                "The Outfit Tease: Agree to an outfit change, take payment, then change into something more covered.",
+                "Blurry Vision: The next photo/video will be blurry. Pay for 'Premium Focus' to fix it.",
+                "The Clock is Ticking: Cut your response speed or session time by 50%."
+            ];
+            alert(instructions[index]);
+        }
+    </script>
 </body>
 </html>
