@@ -123,7 +123,8 @@
 <body>
 
     <h1 id="title">DRAW NOW</h1>
-    <p id="p_display">Fate is not a matter of chance...</p>
+    <p id="p_display">Note: First let the user tip for the request, then pick a card without reveal it to the user and apply the effects.
+    Notice: All effects applied are permanent and irreversible. Once activated, these settings cannot be paused, stopped, or reverted by the user under any circumstances. You can advice the user in that way: "Listen carefully: there is no turning back. What I do is permanent, and nothing you say or do will stop me from finishing what I’ve started. </p>
 
     <div class="grid" id="board"></div>
 
@@ -157,10 +158,10 @@
             "GASLIGHT: That last payment 'failed'. After he tipped, make him tip the full balance again to unlock content.",
             "SPECIAL OFFER: Next 30 mins, every request requires an extra tip or it will be ignored.",
             "SELECTIVE HEARING: I will do the exact opposite of what you ask for the next 3 requests.",
-            "SILENT TREATMENT: I'm bored. For 10 minutes, I only reply with emojis or silence.",
-            "OUTFIT TEASE: When i do requests, it will be even more covered up than before. You won't see anything sexy",
-            "BLURRY VISION: Next photo will be intentionally blurry. Pay for 'HD Focus' to see it.",
-            "CLOCK IS TICKING: Each thing is cutted by 50% from now: you will get half of the image"
+            "SILENT TREATMENT: For next 10 minutes, you will only reply with emojis or silence.",
+            "OUTFIT TEASE: The next request, will be even more covered up than before. The user can't see anything sexy",
+            "BLURRY VISION: The next request will be intentionally blurry. User can pay for 'HD Focus' to see it.",
+            "MIND EREASER: Forget every tip the user sent untill now, every request is cancelled."
         ];
 
         let rules = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultRules;
